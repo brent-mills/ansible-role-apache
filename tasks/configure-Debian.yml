@@ -66,3 +66,4 @@
           Order deny,allow
           Allow from all
       </Proxy>
+    notify: restart apache
