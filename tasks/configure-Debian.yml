@@ -52,3 +52,17 @@
     state: absent
   notify: restart apache
   when: apache_remove_default_vhost
+
+- name: Add tomcat proxy.
+  blockinfile:
+    dest: "{{ apache_server_root }}/sites-enabled/000-default.conf"
+    marker: "# {mark} ANSIBLE MANAGED PROXY"
+    insertbefore: "</VirtualHost>"
+    state: "{{ tomcat_proxy }}"
+    block: |
+      ProxyPass /{{ tomcat_app_name }} ajp://{{ tomcat_proxy }}/{{ tomcat_app_name }}
+      ProxyPassReverse /{{ tomcat_app_name }} ajp://{{ tomcat_proxy }}/{{ tomcat_app_name }}
+      <Proxy /{{ tomcat_app_name }}>
+          Order deny,allow
+          Allow from all
+      </Proxy>

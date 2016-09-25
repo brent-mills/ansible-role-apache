@@ -42,3 +42,8 @@ apache_mods_disabled: []
 
 # Set initial apache state. Recommended values: `started` or `stopped`
 apache_state: started
+
+# Default to no proxy
+tomcat_proxy: absent
+# Default tomcat location for proxy
+tomcat_address: "localhost:8009"
