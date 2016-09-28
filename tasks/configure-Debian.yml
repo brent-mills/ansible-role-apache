@@ -55,9 +55,9 @@
 
 - name: Add tomcat proxy.
   blockinfile:
-    dest: "{{ apache_server_root }}/sites-enabled/000-default.conf"
+    dest: "{{ apache_server_root }}/sites-available/{{ apache_vhosts_filename }}"
     marker: "# {mark} ANSIBLE MANAGED PROXY"
-    insertbefore: "</VirtualHost>"
+    insertafter: '<VirtualHost \*:443>'
     state: "{{ tomcat_proxy }}"
     block: |
       ProxyPass /{{ tomcat_app_name }} ajp://{{ tomcat_address }}/{{ tomcat_app_name }}
@@ -66,4 +66,17 @@
           Order deny,allow
           Allow from all
       </Proxy>
+  notify: restart apache
+
+- name: add redirect to SSL
+  blockinfile:
+    dest: "{{ apache_server_root }}/sites-available/{{ apache_vhosts_filename }}"
+    marker: "# {mark} ANSIBLE MANAGED REDIRECT"
+    insertafter: '<VirtualHost \*:80>'
+    state: "{{ redirect_ssl }}"
+    block: |
+      RewriteEngine on
+      ReWriteCond %{SERVER_PORT} !^443$
+      RewriteCond %{REQUEST_URI} !^\/schema\/
+      RewriteRule ^/(.*)$ https://%{HTTP_HOST}/$1 [NC,R,L]
   notify: restart apache
