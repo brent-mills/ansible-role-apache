@@ -58,11 +58,11 @@
     dest: "{{ apache_server_root }}/sites-available/{{ apache_vhosts_filename }}"
     marker: "# {mark} ANSIBLE MANAGED PROXY"
     insertafter: '<VirtualHost \*:443>'
-    state: "{{ tomcat_proxy }}"
+    state: "{{ apache_tomcat_proxy }}"
     block: |
-      ProxyPass /{{ tomcat_app_name }} ajp://{{ tomcat_address }}/{{ tomcat_app_name }}
-      ProxyPassReverse /{{ tomcat_app_name }} ajp://{{ tomcat_address }}/{{ tomcat_app_name }}
-      <Proxy /{{ tomcat_app_name }}>
+      ProxyPass /{{ apache_tomcat_app_name }} ajp://{{ apache_tomcat_address }}/{{ apache_tomcat_app_name }}
+      ProxyPassReverse /{{ apache_tomcat_app_name }} ajp://{{ apache_tomcat_address }}/{{ apache_tomcat_app_name }}
+      <Proxy /{{ apache_tomcat_app_name }}>
           Order deny,allow
           Allow from all
       </Proxy>
@@ -73,7 +73,7 @@
     dest: "{{ apache_server_root }}/sites-available/{{ apache_vhosts_filename }}"
     marker: "# {mark} ANSIBLE MANAGED REDIRECT"
     insertafter: '<VirtualHost \*:80>'
-    state: "{{ redirect_ssl }}"
+    state: "{{ apache_redirect_ssl }}"
     block: |
       RewriteEngine on
       ReWriteCond %{SERVER_PORT} !^443$
